@@ -90,9 +90,7 @@ class Author(models.Model):
     date_of_death = models.DateField('Died', null=True, blank=True)
 
     def get_absolute_url(self):
-        """
-        Returns the url to access a particular author instance.
-        """
+        """Returns the url to access a particular author instance."""
         return reverse('author-detail', args=[str(self.id)])
 
     def __str__(self):
