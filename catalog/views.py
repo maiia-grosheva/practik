@@ -26,8 +26,25 @@ class BookListView(generic.ListView):
     model = Book
     paginate_by = 10
 
+from django.http import Http404
+
 class BookDetailView(generic.DetailView):
     model = Book
+    def book_detail_view(request, pk):
+        try:
+            book_id = Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+            raise Http404("Book does not exist")
+
+        return render(
+            request,
+            'catalog/book_detail.html',
+            context={'book': book_id, }
+        )
+
+    def book_detail(request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+        return render(request, 'book_detail.html', {'book': book})
 
 class AuthorListView(generic.ListView):
     model = Author
@@ -99,4 +116,17 @@ def renew_book_librarian(request, pk):
         proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
         form = RenewBookForm(initial={'renewal_date': proposed_renewal_date,})
 
-    return render(request, 'catalog/book_renew_librarian.html', {'form': form, 'bookinst':book_inst})
+        return render(request, 'catalog/book_renew_librarian.html', {'form': form, 'bookinst':book_inst})
+
+from django.views.generic.edit import UpdateView, DeleteView
+from django.urls import reverse_lazy
+
+class AuthorUpdate(PermissionRequiredMixin, UpdateView):
+    model = Author
+    fields = '__all__'
+    permission_required = 'catalog.change_author'
+
+class AuthorDelete(PermissionRequiredMixin, DeleteView):
+    model = Author
+    success_url = reverse_lazy('authors')
+    permission_required = 'catalog.delete_author'
