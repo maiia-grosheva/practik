@@ -53,6 +53,7 @@ class Book(models.Model):
 import uuid  # Required for unique book instances
 from datetime import date
 
+
 class BookInstance(models.Model):
     """
     Model representing a specific copy of a book (i.e. that can be borrowed from the library).
@@ -88,6 +89,8 @@ class BookInstance(models.Model):
         if self.due_back and date.today() > self.due_back:
             return True
         return False
+
+
 
 
 class Author(models.Model):
